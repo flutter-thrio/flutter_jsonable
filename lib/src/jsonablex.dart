@@ -77,12 +77,11 @@ List<E> getListFromJson<E>(final dynamic json, final String key) {
   }
   final first = val.first;
   if (first is Map) {
-    final jsonable = jsonableRegistry.getByTypeName(E.runtimeType.toString());
+    final jsonable = jsonableRegistry.getByType<E>();
     if (jsonable != null) {
       return val
-          .map((final e) => e is Map
-              ? jsonable.fromJson(Map<String, dynamic>.from(e))
-              : null)
+          .map((final e) =>
+              e is Map ? jsonable.fromJson(Map<String, dynamic>.from(e)) : null)
           .whereType<E>()
           .toList();
     }
@@ -102,7 +101,7 @@ Map<String, V> getMapFromJson<V>(final dynamic json, final String key) {
   }
   final first = val.values.first;
   if (first is Map) {
-    final jsonable = jsonableRegistry.getByTypeName(V.toString());
+    final jsonable = jsonableRegistry.getByType<V>();
     if (jsonable != null) {
       final results = <String, V>{};
       final es = Map<String, dynamic>.from(val);
@@ -168,8 +167,7 @@ dynamic getJsonFromMap(final dynamic map) {
   } else if (typeName.contains('Map')) {
     return map.map((final k, final v) => MapEntry(k, getJsonFromMap(v)));
   } else {
-    final jsonable =
-        jsonableRegistry.getByTypeName(first.runtimeType.toString());
+    final jsonable = jsonableRegistry.getByTypeName(typeName);
     if (jsonable != null) {
       return map.map((final k, final v) => MapEntry(k, jsonable.toJson(v)));
     }

@@ -51,7 +51,7 @@ void main() {
       )
     ];
     final j1 = getJsonFromList(p1);
-    final p2 = getListFromJson(<String, dynamic>{'peoples': j1}, 'peoples');
+    final p2 = getListFromJson<People>(<String, dynamic>{'peoples': j1}, 'peoples');
     listEquals(p1, p2);
   });
 
@@ -70,7 +70,7 @@ void main() {
       )
     };
     final j1 = getJsonFromMap(p1);
-    final p2 = getMapFromJson(<String, dynamic>{'peoples': j1}, 'peoples');
+    final p2 = getMapFromJson<People>(<String, dynamic>{'peoples': j1}, 'peoples');
     mapEquals(p1, p2);
   });
 }
