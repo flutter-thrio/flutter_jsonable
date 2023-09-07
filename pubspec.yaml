@@ -1,6 +1,6 @@
 name: flutter_jsonable
 description: A new Flutter package provide jsonable APIs.
-version: 1.0.1
+version: 1.1.0
 homepage: https://github.com/flutter-thrio/flutter_jsonable
 
 environment:

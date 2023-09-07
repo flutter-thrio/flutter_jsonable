@@ -35,11 +35,11 @@ class JsonableBuilder<T> extends Jsonable<T> {
 
   final Map<String, dynamic> Function(T obj) _encoder;
 
-  final T? Function(Map<String, dynamic>) _decoder;
+  final T Function(Map<String, dynamic>) _decoder;
 
   @override
-  Map<String, dynamic> toJson(final T obj) => _encoder(obj);
+  Map<String, dynamic> toJson(T obj) => _encoder(obj);
 
   @override
-  T? fromJson(final Map<String, dynamic> json) => _decoder(json);
+  T fromJson(Map<String, dynamic> json) => _decoder(json);
 }

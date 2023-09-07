@@ -28,9 +28,9 @@ abstract class Jsonable<T> {
 
   /// Get instance of [T] from json map.
   ///
-  T? fromJson(final Map<String, dynamic> json);
+  T fromJson(Map<String, dynamic> json);
 
   /// Get json map from this instance.
   ///
-  Map<String, dynamic> toJson(final T obj);
+  Map<String, dynamic> toJson(T obj);
 }

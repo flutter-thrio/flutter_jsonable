@@ -28,7 +28,7 @@ final jsonableRegistry = _JsonableRegistry();
 class _JsonableRegistry {
   final _jsonables = <String, Jsonable<dynamic>>{};
 
-  VoidCallback registerJsonable<T>(final Jsonable<T> jsonable) {
+  VoidCallback registerJsonable<T>(Jsonable<T> jsonable) {
     final typeName = jsonable.type.toString();
     _jsonables[typeName] = jsonable;
     return () => _jsonables.remove(typeName);
@@ -36,5 +36,5 @@ class _JsonableRegistry {
 
   Jsonable<dynamic>? getByType<T>() => _jsonables[T.toString()];
 
-  Jsonable<dynamic>? getByTypeName(final String typeName) => _jsonables[typeName];
+  Jsonable<dynamic>? getByTypeName(String typeName) => _jsonables[typeName];
 }
