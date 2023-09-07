@@ -23,13 +23,9 @@ import 'jsonable_registry.dart';
 
 /// Get value from [json], throw ArgumentError when`key`'s value not found .
 ///
-T getValueFromJson<T>(dynamic json, String key) {
-  final val = getValueFromJsonOrNull<T>(json, key);
-  if (val != null) {
-    return val;
-  }
-  throw ArgumentError.notNull('json[$key]');
-}
+T getValueFromJson<T>(dynamic json, String key) =>
+    getValueFromJsonOrNull<T>(json, key) ??
+    (throw ArgumentError.notNull('json[$key]'));
 
 /// Get value from [json], return `defaultValue` when`key`'s value not found .
 ///
@@ -37,15 +33,10 @@ T getValueFromJsonOrDefault<T>(
   final dynamic json,
   final String key,
   final T defaultValue,
-) {
-  final val = getValueFromJsonOrNull<T>(json, key);
-  if (val != null) {
-    return val;
-  }
-  return defaultValue;
-}
+) =>
+    getValueFromJsonOrNull<T>(json, key) ?? defaultValue;
 
-/// Get value from [json], return `null` when`key`'s value not found .
+/// Get value from [json], return [null] when`key`'s value not found .
 ///
 T? getValueFromJsonOrNull<T>(dynamic json, String key) {
   if (json == null || json is! Map || json.isEmpty) {
@@ -65,46 +56,92 @@ T? getValueFromJsonOrNull<T>(dynamic json, String key) {
   return null;
 }
 
-/// Get list from [json], return empty list when `key`'s value not found.
+/// Get value from [json], throw ArgumentError when`key`'s value not found .
 ///
-List<E> getListFromJson<E>(dynamic json, String key) {
+List<E> getListFromJson<E>(dynamic json, String key) =>
+    getListFromJsonOrNull(json, key) ??
+    (throw ArgumentError.notNull('json[$key]'));
+
+/// Get list from [json]
+///
+/// return [null] when `key`'s value not found.
+///
+/// return empty list when `key`'s value is empty list.
+///
+List<E>? getListFromJsonOrNull<E>(dynamic json, String key) {
   if (json == null || json is! Map || json.isEmpty) {
-    return <E>[];
+    return null;
   }
   final val = json[key];
-  if (val is! List || val.isEmpty) {
-    return <E>[];
+  if (val is! List) {
+    return null;
   }
   final first = val.first;
   if (first is Map) {
     final jsonable = jsonableRegistry.getByType<E>();
     if (jsonable != null) {
-      return val
-          .map((e) =>
-              e is Map ? jsonable.fromJson(Map<String, dynamic>.from(e)) : null)
-          .whereType<E>()
-          .toList();
+      final results = <E>[];
+      for (final e in val) {
+        if (e is! Map) {
+          continue;
+        }
+        final v = e.whereType<String, dynamic>();
+        if (v.isNotEmpty) {
+          final ev = jsonable.fromJson(v);
+          if (ev is E) {
+            results.add(ev);
+          }
+        }
+      }
+      return results;
     }
   }
-  return List<E>.from(val);
+  final list = val.whereType<E>().toList();
+  if (list.isEmpty) {
+    return null;
+  }
+  return list;
 }
 
-/// Get map from [json], return empty map when `key`'s value not found.
+/// Get list from [json]
 ///
-Map<String, V> getMapFromJson<V>(dynamic json, String key) {
+/// return `defaultValue` when `key`'s value not found.
+///
+/// return empty list when `key`'s value is empty list.
+///
+List<E> getListFromJsonOrDefault<E>(
+  dynamic json,
+  String key,
+  List<E> defaultValue,
+) =>
+    getListFromJsonOrNull(json, key) ?? defaultValue;
+
+/// Get map from [json], throw ArgumentError when`key`'s value not found .
+///
+Map<String, V> getMapFromJson<V>(dynamic json, String key) =>
+    getMapFromJsonOrNull(json, key) ??
+    (throw ArgumentError.notNull('json[$key]'));
+
+/// Get map from [json]
+///
+/// return [null] when `key`'s value not found.
+///
+/// return empty map when `key`'s value is empty list.
+///
+Map<String, V>? getMapFromJsonOrNull<V>(dynamic json, String key) {
   if (json == null || json is! Map || json.isEmpty) {
-    return <String, V>{};
+    return null;
   }
   final val = json[key];
-  if (val is! Map || val.isEmpty) {
-    return <String, V>{};
+  if (val is! Map) {
+    return null;
   }
   final first = val.values.first;
   if (first is Map) {
     final jsonable = jsonableRegistry.getByType<V>();
     if (jsonable != null) {
       final results = <String, V>{};
-      final es = Map<String, dynamic>.from(val);
+      final es = val.whereType<String, dynamic>();
       for (final k in es.keys) {
         final v = es[k];
         if (v is Map) {
@@ -117,8 +154,25 @@ Map<String, V> getMapFromJson<V>(dynamic json, String key) {
       return results;
     }
   }
-  return Map<String, V>.from(val);
+  final map = val.whereType<String, V>();
+  if (map.isEmpty) {
+    return null;
+  }
+  return map;
 }
+
+/// Get map from [json]
+///
+/// return [defaultValue] when `key`'s value not found.
+///
+/// return empty map when `key`'s value is empty list.
+///
+Map<String, V> getMapFromJsonOrDefault<V>(
+  dynamic json,
+  String key,
+  Map<String, V> defaultValue,
+) =>
+    getMapFromJsonOrNull(json, key) ?? defaultValue;
 
 /// Get json from [value], return [value] when `T`'s jsonable not found.
 ///
@@ -170,6 +224,22 @@ dynamic getJsonFromMap(dynamic map) {
     final jsonable = jsonableRegistry.getByTypeName(typeName);
     if (jsonable != null) {
       return map.map((k, v) => MapEntry(k, jsonable.toJson(v)));
+    }
+    return map;
+  }
+}
+
+extension MapX<K, V> on Map<K, V> {
+  /// Creates a new [Map] with all keys that have type [RK]
+  /// and all values have type [RV].
+  ///
+  Map<RK, RV> whereType<RK, RV>() {
+    final map = <RK, RV>{};
+    for (final k in keys) {
+      final v = this[k];
+      if (k is RK && v is RV) {
+        map[k] = v;
+      }
     }
     return map;
   }

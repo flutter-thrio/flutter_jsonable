@@ -20,8 +20,8 @@ class People {
         name: getValueFromJsonOrNull<String>(json, 'name'),
         age: getValueFromJsonOrDefault<int>(json, 'age', 10),
         sex: getValueFromJsonOrNull<String>(json, 'sex'),
-        children: getListFromJson<People>(json, 'children'),
-        parents: getMapFromJson<People>(json, 'parents'),
+        children: getListFromJsonOrDefault<People>(json, 'children', <People>[]),
+        parents: getMapFromJsonOrDefault<People>(json, 'parents', <String, People>{}),
       );
 
   final String? name;

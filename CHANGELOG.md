@@ -1,3 +1,6 @@
+## 1.2.0
+* feat: add getListFromJsonOrNull,getListFromJsonOrDefault,getMapFromJsonOrNull,getMapFromJsonOrDefault
+
 ## 1.1.0
 * refactor: decoder return not null.
 * chore: code stye format. 

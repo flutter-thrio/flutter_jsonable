@@ -10,7 +10,6 @@ analyzer:
     - lib/**.pb*.dart
     - lib/src/**.g.dart
     - lib/src/**.pb*.dart
-    - test/**
     - build/**
 
 # 完整Lint支持列表 https://dart-lang.github.io/linter/lints/
