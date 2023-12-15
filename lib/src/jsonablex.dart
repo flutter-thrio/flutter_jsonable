@@ -46,6 +46,9 @@ T? getValueFromJsonOrNull<T>(dynamic json, String key) {
   if (val is T) {
     return val;
   }
+  if (T == DateTime && val is String) {
+    return DateTime.tryParse(val) as T?;
+  }
   if (val is Map) {
     final jsonable = jsonableRegistry.getByType<T>();
     final value = jsonable?.fromJson(Map<String, dynamic>.from(val));
@@ -77,6 +80,14 @@ List<E>? getListFromJsonOrNull<E>(dynamic json, String key) {
     return null;
   }
   final first = val.first;
+
+  if (E == DateTime && first is String) {
+    return val
+        .whereType<String>()
+        .map<E>((e) => DateTime.tryParse(e) as E? ?? (throw Error()))
+        .toList();
+  }
+
   if (first is Map) {
     final jsonable = jsonableRegistry.getByType<E>();
     if (jsonable != null) {
@@ -136,6 +147,12 @@ Map<String, V>? getMapFromJsonOrNull<V>(dynamic json, String key) {
   if (val is! Map) {
     return null;
   }
+  if (V == DateTime && val is String) {
+    return val.whereType<String, String>().map((k, v) {
+      final nv = DateTime.tryParse(v) as V? ?? (throw Error());
+      return MapEntry(k, nv);
+    });
+  }
   final first = val.values.first;
   if (first is Map) {
     final jsonable = jsonableRegistry.getByType<V>();
@@ -179,6 +196,9 @@ Map<String, V> getMapFromJsonOrDefault<V>(
 dynamic getJsonFromValue<T>(T? value) {
   if (value == null) {
     return null;
+  }
+  if (value is DateTime) {
+    return value.toIso8601String();
   }
   final jsonable = jsonableRegistry.getByType<T>();
   if (jsonable == null) {

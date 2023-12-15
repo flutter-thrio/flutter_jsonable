@@ -23,10 +23,11 @@ void main() {
       name: 'Jack_0',
       sex: 'male',
       children: [
-        People(name: 'Nacy', age: 2, sex: 'female'),
+        People(name: 'Nacy', age: 2, sex: 'female', birthday: DateTime.now()),
       ],
       parents: <String, People>{
-        'mother': People(name: 'mother', age: 100, sex: 'female')
+        'mother': People(
+            name: 'mother', age: 100, sex: 'female', birthday: DateTime.now())
       },
     );
     final j1 = getJsonFromValue(p1);
